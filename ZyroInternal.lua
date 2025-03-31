@@ -1,680 +1,321 @@
--- Zyro Internal UI Library v3
--- Ultra-Modern Premium Design
-
-local ZyroInternal = {}
-ZyroInternal.__index = ZyroInternal
+-- Modernized Hydra UI Library Recreation
+local HydraLib = {}
+HydraLib.__index = HydraLib
 
 -- Utility functions
-local function tween(obj, props, duration, style, dir)
-    style = style or Enum.EasingStyle.Quint
-    dir = dir or Enum.EasingDirection.Out
-    game:GetService("TweenService"):Create(obj, TweenInfo.new(duration, style, dir), props):Play()
-end
-
-local function create(class, props)
-    local obj = Instance.new(class)
-    for prop, value in pairs(props) do
+local function Create(instance, properties)
+    local obj = Instance.new(instance)
+    for prop, value in pairs(properties) do
         if prop ~= "Parent" then
-            if pcall(function() return obj[prop] end) then
-                obj[prop] = value
-            end
+            pcall(function() obj[prop] = value end)
         end
-    end
-    if props.Parent then
-        obj.Parent = props.Parent
     end
     return obj
 end
 
--- Premium Color Palette
-local colors = {
-    primary = Color3.fromRGB(0, 170, 255),
-    background = Color3.fromRGB(12, 12, 15),
-    surface = Color3.fromRGB(20, 20, 25),
-    surfaceLight = Color3.fromRGB(30, 30, 38),
-    surfaceLighter = Color3.fromRGB(40, 40, 50),
-    text = Color3.fromRGB(245, 245, 250),
-    textDim = Color3.fromRGB(180, 180, 190),
-    accent = Color3.fromRGB(0, 170, 255),
-    accentDark = Color3.fromRGB(0, 140, 220),
-    divider = Color3.fromRGB(40, 40, 50),
-    glow = Color3.fromRGB(0, 100, 255)
-}
+local function Tween(obj, props, time, easing)
+    game:GetService("TweenService"):Create(obj, TweenInfo.new(time or 0.2, easing or Enum.EasingStyle.Quad), props):Play()
+end
 
--- Main Window
-function ZyroInternal:Window(title, options)
+function HydraLib:Window(title, options)
     options = options or {}
-    local accentColor = options.AccentColor or colors.accent
-    local backgroundColor = options.BackgroundColor or colors.background
-    local surfaceColor = options.SurfaceColor or colors.surface
-    local textColor = options.TextColor or colors.text
+    local accent = options.Accent or Color3.fromRGB(0, 170, 255)
+    local dark = options.Dark or Color3.fromRGB(15, 15, 20)
+    local darker = options.Darker or Color3.fromRGB(10, 10, 15)
     
-    local Zyro = {}
+    local Hydra = {}
     local tabs = {}
     
-    -- Main UI Container
-    local ScreenGui = create("ScreenGui", {
-        Name = "ZyroInternal",
+    -- Main UI
+    local ScreenGui = Create("ScreenGui", {
+        Name = "HydraUI",
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Global
     })
     
-    local MainFrame = create("Frame", {
-        Name = "MainFrame",
-        Size = UDim2.new(0, 540, 0, 500),
-        Position = UDim2.new(0.5, -270, 0.5, -250),
-        BackgroundColor3 = backgroundColor,
+    local Main = Create("Frame", {
+        Name = "Main",
+        Size = UDim2.new(0, 500, 0, 400),
+        Position = UDim2.new(0.5, -250, 0.5, -200),
+        BackgroundColor3 = darker,
         AnchorPoint = Vector2.new(0.5, 0.5),
         Parent = ScreenGui
     })
     
-    create("UICorner", {
-        CornerRadius = UDim.new(0, 10),
-        Parent = MainFrame
+    Create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = Main})
+    
+    -- Title bar (Hydra-style)
+    local Top = Create("Frame", {
+        Name = "Top",
+        Size = UDim2.new(1, 0, 0, 30),
+        BackgroundColor3 = dark,
+        Parent = Main
     })
     
-    -- Glow effect
-    local glow = create("ImageLabel", {
-        Name = "Glow",
-        Size = UDim2.new(1, 40, 1, 40),
-        Position = UDim2.new(0.5, -20, 0.5, -20),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://5028857084",
-        ImageColor3 = colors.glow,
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(24, 24, 276, 276),
-        ImageTransparency = 0.8,
-        Parent = MainFrame
+    Create("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = Top
     })
     
-    -- Top Bar (now at bottom)
-    local BottomBar = create("Frame", {
-        Name = "BottomBar",
-        Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.new(0, 0, 1, -40),
-        BackgroundColor3 = surfaceColor,
-        Parent = MainFrame
-    })
-    
-    -- Remove bottom rounding
-    create("UIStroke", {
-        Color = colors.divider,
-        Thickness = 1,
-        Parent = MainFrame
-    })
-    
-    local Title = create("TextLabel", {
-        Name = "Title",
-        Size = UDim2.new(0, 120, 1, 0),
-        Position = UDim2.new(0, 16, 0, 0),
-        BackgroundTransparency = 1,
-        Text = title or "ZYRO",
-        TextColor3 = textColor,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Font = Enum.Font.GothamBlack,
+    local Title = Create("TextLabel", {
+        Text = title or "HYDRA",
+        Font = Enum.Font.GothamBold,
         TextSize = 14,
-        TextTransparency = 0.2,
-        Parent = BottomBar
-    })
-    
-    local CloseButton = create("ImageButton", {
-        Name = "CloseButton",
-        Size = UDim2.new(0, 24, 0, 24),
-        Position = UDim2.new(1, -32, 0.5, -12),
+        TextColor3 = Color3.new(1, 1, 1),
         BackgroundTransparency = 1,
-        Image = "rbxassetid://3926305904",
-        ImageRectOffset = Vector2.new(284, 4),
-        ImageRectSize = Vector2.new(24, 24),
-        ImageColor3 = textColor,
-        Parent = BottomBar
+        Size = UDim2.new(0, 100, 1, 0),
+        Position = UDim2.new(0, 10, 0, 0),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = Top
     })
     
-    CloseButton.MouseButton1Click:Connect(function()
+    -- Hydra-style close button
+    local Close = Create("TextButton", {
+        Text = "X",
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextColor3 = Color3.new(1, 1, 1),
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 30, 1, 0),
+        Position = UDim2.new(1, -30, 0, 0),
+        Parent = Top
+    })
+    
+    Close.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
     
-    -- Tab Bar (now at top)
-    local TabBar = create("Frame", {
-        Name = "TabBar",
-        Size = UDim2.new(1, -24, 0, 40),
-        Position = UDim2.new(0, 12, 0, 0),
+    -- Tab bar (Hydra-style with underline)
+    local TabList = Create("Frame", {
+        Size = UDim2.new(1, -10, 0, 30),
+        Position = UDim2.new(0, 5, 0, 30),
         BackgroundTransparency = 1,
-        Parent = MainFrame
+        Parent = Main
     })
     
-    local TabList = create("Frame", {
-        Name = "TabList",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Parent = TabBar
-    })
-    
-    local UIListLayout = create("UIListLayout", {
+    local UIListLayout = Create("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 8),
+        Padding = UDim.new(0, 5),
         Parent = TabList
     })
     
-    -- Content Area
-    local ContentArea = create("ScrollingFrame", {
-        Name = "ContentArea",
-        Size = UDim2.new(1, -24, 1, -96),
-        Position = UDim2.new(0, 12, 0, 48),
+    -- Content area
+    local Container = Create("ScrollingFrame", {
+        Size = UDim2.new(1, 0, 1, -60),
+        Position = UDim2.new(0, 0, 0, 60),
         BackgroundTransparency = 1,
-        ScrollBarThickness = 4,
-        ScrollBarImageColor3 = accentColor,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        Parent = MainFrame
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = accent,
+        Parent = Main
+    })
+    
+    Create("UIListLayout", {
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Padding = UDim.new(0, 5),
+        Parent = Container
     })
     
     -- Dragging functionality
-    local UserInputService = game:GetService("UserInputService")
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
-    
-    local function update(input)
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-    
-    TabBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    local dragging, dragInput, dragStart, startPos
+    Top.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
-            startPos = MainFrame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
+            startPos = Main.Position
+            Tween(Main, {Size = UDim2.new(0, 510, 0, 410)})
         end
     end)
     
-    TabBar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
+    Top.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+            Tween(Main, {Size = UDim2.new(0, 500, 0, 400)})
         end
     end)
     
-    UserInputService.InputChanged:Connect(function(input)
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
         if input == dragInput and dragging then
-            update(input)
+            local delta = input.Position - dragStart
+            Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
     
-    -- Tab functions
-    function Zyro:Tab(name)
+    -- Tab system
+    function Hydra:Tab(name)
         local tab = {}
-        local tabButton = create("TextButton", {
-            Name = name .. "TabButton",
-            Size = UDim2.new(0, 100, 1, -8),
-            Position = UDim2.new(0, 0, 0.5, -4),
-            BackgroundColor3 = surfaceColor,
+        local tabButton = Create("TextButton", {
             Text = name,
-            TextColor3 = textColor,
-            Font = Enum.Font.GothamMedium,
+            Font = Enum.Font.Gotham,
             TextSize = 13,
+            TextColor3 = Color3.new(1, 1, 1),
+            BackgroundColor3 = dark,
+            Size = UDim2.new(0, 80, 1, 0),
             Parent = TabList
         })
         
-        create("UICorner", {
-            CornerRadius = UDim.new(0, 6),
-            Parent = tabButton
-        })
+        Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = tabButton})
         
-        -- Tab indicator (hidden by default)
-        local tabIndicator = create("Frame", {
-            Name = "Indicator",
-            Size = UDim2.new(1, 0, 0, 3),
-            Position = UDim2.new(0, 0, 1, -3),
-            BackgroundColor3 = accentColor,
+        -- Hydra-style tab indicator
+        local indicator = Create("Frame", {
+            Size = UDim2.new(1, 0, 0, 2),
+            Position = UDim2.new(0, 0, 1, -2),
+            BackgroundColor3 = accent,
             Visible = false,
             Parent = tabButton
         })
         
-        create("UICorner", {
-            CornerRadius = UDim.new(0, 2),
-            Parent = tabIndicator
-        })
-        
-        local tabFrame = create("Frame", {
-            Name = name .. "TabFrame",
+        local tabFrame = Create("Frame", {
             Size = UDim2.new(1, 0, 1, 0),
             BackgroundTransparency = 1,
-            Parent = ContentArea
+            Visible = #tabs == 0,
+            Parent = Container
         })
         
-        local contentLayout = create("UIListLayout", {
+        Create("UIListLayout", {
             SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 12),
+            Padding = UDim.new(0, 5),
             Parent = tabFrame
         })
         
-        tabFrame.Visible = #tabs == 0
-        tabIndicator.Visible = #tabs == 0
-        tabButton.BackgroundColor3 = tabFrame.Visible and surfaceLight or surfaceColor
+        indicator.Visible = #tabs == 0
         
         tabButton.MouseButton1Click:Connect(function()
-            for _, otherTab in pairs(tabs) do
-                otherTab.Frame.Visible = false
-                otherTab.Indicator.Visible = false
-                tween(otherTab.Button, {BackgroundColor3 = surfaceColor}, 0.2)
+            for _, t in pairs(tabs) do
+                t.Frame.Visible = false
+                t.Indicator.Visible = false
+                Tween(t.Button, {BackgroundColor3 = dark})
             end
             tabFrame.Visible = true
-            tabIndicator.Visible = true
-            tween(tabButton, {BackgroundColor3 = surfaceLight}, 0.2)
+            indicator.Visible = true
+            Tween(tabButton, {BackgroundColor3 = darker})
         end)
         
         table.insert(tabs, {
             Button = tabButton,
             Frame = tabFrame,
-            Indicator = tabIndicator
+            Indicator = indicator
         })
         
-        -- Tab elements
+        -- Section function
         function tab:Section(title)
             local section = {}
-            local sectionFrame = create("Frame", {
-                Name = title .. "Section",
-                Size = UDim2.new(1, 0, 0, 0),
-                BackgroundColor3 = surfaceColor,
-                LayoutOrder = #tabFrame:GetChildren() + 1,
+            local sectionFrame = Create("Frame", {
+                Size = UDim2.new(1, -10, 0, 0),
+                BackgroundColor3 = dark,
                 Parent = tabFrame
             })
             
-            create("UICorner", {
-                CornerRadius = UDim.new(0, 8),
-                Parent = sectionFrame
-            })
+            Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = sectionFrame})
             
-            create("UIStroke", {
-                Color = colors.divider,
-                Thickness = 1,
-                Parent = sectionFrame
-            })
-            
-            -- Section glow
-            local sectionGlow = create("ImageLabel", {
-                Name = "Glow",
-                Size = UDim2.new(1, 10, 1, 10),
-                Position = UDim2.new(0.5, -5, 0.5, -5),
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                BackgroundTransparency = 1,
-                Image = "rbxassetid://5028857084",
-                ImageColor3 = colors.glow,
-                ScaleType = Enum.ScaleType.Slice,
-                SliceCenter = Rect.new(24, 24, 276, 276),
-                ImageTransparency = 0.9,
-                Parent = sectionFrame
-            })
-            
-            local sectionTitle = create("TextLabel", {
-                Name = "Title",
-                Size = UDim2.new(1, -24, 0, 28),
-                Position = UDim2.new(0, 12, 0, 8),
-                BackgroundTransparency = 1,
-                Text = string.upper(title),
-                TextColor3 = textColor,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Font = Enum.Font.GothamBold,
+            local sectionTitle = Create("TextLabel", {
+                Text = title,
+                Font = Enum.Font.Gotham,
                 TextSize = 12,
+                TextColor3 = Color3.new(1, 1, 1),
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, -10, 0, 20),
+                Position = UDim2.new(0, 5, 0, 5),
+                TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = sectionFrame
             })
             
-            local divider = create("Frame", {
-                Name = "Divider",
-                Size = UDim2.new(1, -24, 0, 1),
-                Position = UDim2.new(0, 12, 0, 40),
-                BackgroundColor3 = colors.divider,
-                Parent = sectionFrame
-            })
-            
-            local contentFrame = create("Frame", {
-                Name = "Content",
-                Size = UDim2.new(1, -24, 0, 0),
-                Position = UDim2.new(0, 12, 0, 48),
+            local content = Create("Frame", {
+                Size = UDim2.new(1, -10, 0, 0),
+                Position = UDim2.new(0, 5, 0, 30),
                 BackgroundTransparency = 1,
                 Parent = sectionFrame
             })
             
-            local layout = create("UIListLayout", {
+            Create("UIListLayout", {
                 SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDim.new(0, 10),
-                Parent = contentFrame
+                Padding = UDim.new(0, 5),
+                Parent = content
             })
             
-            layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                contentFrame.Size = UDim2.new(1, -24, 0, layout.AbsoluteContentSize.Y)
-                sectionFrame.Size = UDim2.new(1, 0, 0, layout.AbsoluteContentSize.Y + 56)
-                ContentArea.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 24)
-            end)
-            
-            -- Section elements
+            -- Button element
             function section:Button(text, callback)
-                local button = create("TextButton", {
-                    Name = text .. "Button",
-                    Size = UDim2.new(1, 0, 0, 36),
-                    BackgroundColor3 = colors.surfaceLight,
+                local button = Create("TextButton", {
                     Text = text,
-                    TextColor3 = textColor,
                     Font = Enum.Font.Gotham,
-                    TextSize = 13,
-                    LayoutOrder = #contentFrame:GetChildren() + 1,
-                    Parent = contentFrame
+                    TextSize = 12,
+                    TextColor3 = Color3.new(1, 1, 1),
+                    BackgroundColor3 = darker,
+                    Size = UDim2.new(1, 0, 0, 30),
+                    Parent = content
                 })
                 
-                create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = button
-                })
-                
-                -- Button glow
-                local buttonGlow = create("ImageLabel", {
-                    Name = "Glow",
-                    Size = UDim2.new(1, 10, 1, 10),
-                    Position = UDim2.new(0.5, -5, 0.5, -5),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    BackgroundTransparency = 1,
-                    Image = "rbxassetid://5028857084",
-                    ImageColor3 = colors.glow,
-                    ScaleType = Enum.ScaleType.Slice,
-                    SliceCenter = Rect.new(24, 24, 276, 276),
-                    ImageTransparency = 0.95,
-                    Parent = button
-                })
+                Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = button})
                 
                 button.MouseButton1Click:Connect(function()
                     callback()
-                    tween(button, {BackgroundColor3 = accentColor}, 0.15)
-                    tween(buttonGlow, {ImageTransparency = 0.8}, 0.15)
-                    tween(button, {BackgroundColor3 = colors.surfaceLight}, 0.15, nil, nil, 0.15)
-                    tween(buttonGlow, {ImageTransparency = 0.95}, 0.15, nil, nil, 0.15)
+                    Tween(button, {BackgroundColor3 = accent}, 0.1)
+                    Tween(button, {BackgroundColor3 = darker}, 0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0.1)
                 end)
                 
                 button.MouseEnter:Connect(function()
-                    tween(button, {BackgroundColor3 = colors.surfaceLighter}, 0.15)
+                    Tween(button, {BackgroundColor3 = Color3.fromRGB(30, 30, 40)})
                 end)
                 
                 button.MouseLeave:Connect(function()
-                    tween(button, {BackgroundColor3 = colors.surfaceLight}, 0.15)
+                    Tween(button, {BackgroundColor3 = darker})
                 end)
                 
                 return button
             end
             
+            -- Toggle element
             function section:Toggle(text, default, callback)
-                local toggleValue = default or false
-                local toggle = create("TextButton", {
-                    Name = text .. "Toggle",
-                    Size = UDim2.new(1, 0, 0, 32),
-                    BackgroundTransparency = 1,
+                local toggle = Create("TextButton", {
                     Text = "",
-                    LayoutOrder = #contentFrame:GetChildren() + 1,
-                    Parent = contentFrame
+                    Size = UDim2.new(1, 0, 0, 30),
+                    BackgroundTransparency = 1,
+                    Parent = content
                 })
                 
-                local toggleFrame = create("Frame", {
-                    Name = "ToggleFrame",
-                    Size = UDim2.new(1, 0, 0, 32),
-                    BackgroundTransparency = 1,
+                local toggleFrame = Create("Frame", {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundColor3 = darker,
                     Parent = toggle
                 })
                 
-                local toggleText = create("TextLabel", {
-                    Name = "Text",
-                    Size = UDim2.new(0.7, 0, 1, 0),
-                    Position = UDim2.new(0, 0, 0, 0),
-                    BackgroundTransparency = 1,
+                Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = toggleFrame})
+                
+                local toggleText = Create("TextLabel", {
                     Text = text,
-                    TextColor3 = textColor,
-                    TextXAlignment = Enum.TextXAlignment.Left,
                     Font = Enum.Font.Gotham,
-                    TextSize = 13,
-                    Parent = toggleFrame
-                })
-                
-                local toggleSwitch = create("Frame", {
-                    Name = "Switch",
-                    Size = UDim2.new(0, 50, 0, 26),
-                    Position = UDim2.new(1, -50, 0.5, -13),
-                    BackgroundColor3 = colors.surfaceLight,
-                    Parent = toggleFrame
-                })
-                
-                create("UICorner", {
-                    CornerRadius = UDim.new(1, 0),
-                    Parent = toggleSwitch
-                })
-                
-                -- Toggle glow
-                local toggleGlow = create("ImageLabel", {
-                    Name = "Glow",
-                    Size = UDim2.new(1, 10, 1, 10),
-                    Position = UDim2.new(0.5, -5, 0.5, -5),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    TextSize = 12,
+                    TextColor3 = Color3.new(1, 1, 1),
                     BackgroundTransparency = 1,
-                    Image = "rbxassetid://5028857084",
-                    ImageColor3 = colors.glow,
-                    ScaleType = Enum.ScaleType.Slice,
-                    SliceCenter = Rect.new(24, 24, 276, 276),
-                    ImageTransparency = 0.95,
-                    Parent = toggleSwitch
+                    Size = UDim2.new(0.7, 0, 1, 0),
+                    Position = UDim2.new(0, 5, 0, 0),
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Parent = toggleFrame
                 })
                 
-                local toggleDot = create("Frame", {
-                    Name = "Dot",
-                    Size = UDim2.new(0, 22, 0, 22),
-                    Position = UDim2.new(0, 2, 0.5, -11),
-                    BackgroundColor3 = toggleValue and accentColor or colors.textDim,
-                    Parent = toggleSwitch
+                local toggleSwitch = Create("Frame", {
+                    Size = UDim2.new(0.25, 0, 0, 20),
+                    Position = UDim2.new(0.75, -5, 0.5, -10),
+                    BackgroundColor3 = default and accent or Color3.fromRGB(60, 60, 70),
+                    Parent = toggleFrame
                 })
                 
-                create("UICorner", {
-                    CornerRadius = UDim.new(1, 0),
-                    Parent = toggleDot
-                })
-                
-                create("UIStroke", {
-                    Color = Color3.fromRGB(60, 60, 70),
-                    Thickness = 1,
-                    Parent = toggleDot
-                })
+                Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = toggleSwitch})
                 
                 toggle.MouseButton1Click:Connect(function()
-                    toggleValue = not toggleValue
-                    if toggleValue then
-                        tween(toggleDot, {
-                            Position = UDim2.new(1, -24, 0.5, -11),
-                            BackgroundColor3 = accentColor
-                        }, 0.2)
-                        tween(toggleGlow, {ImageTransparency = 0.8}, 0.2)
-                    else
-                        tween(toggleDot, {
-                            Position = UDim2.new(0, 2, 0.5, -11),
-                            BackgroundColor3 = colors.textDim
-                        }, 0.2)
-                        tween(toggleGlow, {ImageTransparency = 0.95}, 0.2)
-                    end
-                    callback(toggleValue)
+                    default = not default
+                    Tween(toggleSwitch, {BackgroundColor3 = default and accent or Color3.fromRGB(60, 60, 70)})
+                    callback(default)
                 end)
                 
                 return {
                     Set = function(self, value)
-                        toggleValue = value
-                        if toggleValue then
-                            toggleDot.Position = UDim2.new(1, -24, 0.5, -11)
-                            toggleDot.BackgroundColor3 = accentColor
-                            toggleGlow.ImageTransparency = 0.8
-                        else
-                            toggleDot.Position = UDim2.new(0, 2, 0.5, -11)
-                            toggleDot.BackgroundColor3 = colors.textDim
-                            toggleGlow.ImageTransparency = 0.95
-                        end
-                        callback(toggleValue)
-                    end,
-                    Get = function(self)
-                        return toggleValue
+                        default = value
+                        toggleSwitch.BackgroundColor3 = default and accent or Color3.fromRGB(60, 60, 70)
+                        callback(default)
                     end
                 }
             end
-            
-            function section:Slider(text, min, max, default, callback)
-                local sliderValue = default or min
-                local slider = create("Frame", {
-                    Name = text .. "Slider",
-                    Size = UDim2.new(1, 0, 0, 56),
-                    BackgroundTransparency = 1,
-                    LayoutOrder = #contentFrame:GetChildren() + 1,
-                    Parent = contentFrame
-                })
-                
-                local sliderText = create("TextLabel", {
-                    Name = "Text",
-                    Size = UDim2.new(1, 0, 0, 20),
-                    BackgroundTransparency = 1,
-                    Text = text .. ": " .. sliderValue,
-                    TextColor3 = textColor,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Font = Enum.Font.Gotham,
-                    TextSize = 13,
-                    Parent = slider
-                })
-                
-                local sliderBar = create("Frame", {
-                    Name = "Bar",
-                    Size = UDim2.new(1, 0, 0, 6),
-                    Position = UDim2.new(0, 0, 0, 30),
-                    BackgroundColor3 = colors.surfaceLight,
-                    Parent = slider
-                })
-                
-                create("UICorner", {
-                    CornerRadius = UDim.new(1, 0),
-                    Parent = sliderBar
-                })
-                
-                -- Slider glow
-                local sliderGlow = create("ImageLabel", {
-                    Name = "Glow",
-                    Size = UDim2.new(1, 10, 1, 10),
-                    Position = UDim2.new(0.5, -5, 0.5, -5),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    BackgroundTransparency = 1,
-                    Image = "rbxassetid://5028857084",
-                    ImageColor3 = colors.glow,
-                    ScaleType = Enum.ScaleType.Slice,
-                    SliceCenter = Rect.new(24, 24, 276, 276),
-                    ImageTransparency = 0.95,
-                    Parent = sliderBar
-                })
-                
-                local sliderFill = create("Frame", {
-                    Name = "Fill",
-                    Size = UDim2.new((sliderValue - min) / (max - min), 0, 1, 0),
-                    BackgroundColor3 = accentColor,
-                    Parent = sliderBar
-                })
-                
-                create("UICorner", {
-                    CornerRadius = UDim.new(1, 0),
-                    Parent = sliderFill
-                })
-                
-                local sliderDot = create("Frame", {
-                    Name = "Dot",
-                    Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new((sliderValue - min) / (max - min), -8, 0.5, -8),
-                    BackgroundColor3 = Color3.fromRGB(240, 240, 245),
-                    Parent = sliderBar
-                })
-                
-                create("UICorner", {
-                    CornerRadius = UDim.new(1, 0),
-                    Parent = sliderDot
-                })
-                
-                create("UIStroke", {
-                    Color = accentColor,
-                    Thickness = 2,
-                    Parent = sliderDot
-                })
-                
-                -- Dot glow
-                local dotGlow = create("ImageLabel", {
-                    Name = "Glow",
-                    Size = UDim2.new(1, 10, 1, 10),
-                    Position = UDim2.new(0.5, -5, 0.5, -5),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    BackgroundTransparency = 1,
-                    Image = "rbxassetid://5028857084",
-                    ImageColor3 = colors.glow,
-                    ScaleType = Enum.ScaleType.Slice,
-                    SliceCenter = Rect.new(24, 24, 276, 276),
-                    ImageTransparency = 0.9,
-                    Parent = sliderDot
-                })
-                
-                local sliding = false
-                
-                local function updateSlider(input)
-                    local pos = UDim2.new(
-                        math.clamp((input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X, 0, 1),
-                        0, 1, 0
-                    )
-                    sliderFill.Size = pos
-                    sliderDot.Position = UDim2.new(pos.X.Scale, -8, 0.5, -8)
-                    local value = math.floor(min + (max - min) * pos.X.Scale)
-                    if value ~= sliderValue then
-                        sliderValue = value
-                        sliderText.Text = text .. ": " .. sliderValue
-                        callback(sliderValue)
-                    end
-                end
-                
-                slider.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        sliding = true
-                        updateSlider(input)
-                        tween(sliderGlow, {ImageTransparency = 0.8}, 0.2)
-                        tween(dotGlow, {ImageTransparency = 0.7}, 0.2)
-                    end
-                end)
-                
-                slider.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        sliding = false
-                        tween(sliderGlow, {ImageTransparency = 0.95}, 0.2)
-                        tween(dotGlow, {ImageTransparency = 0.9}, 0.2)
-                    end
-                end)
-                
-                game:GetService("UserInputService").InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseMovement and sliding then
-                        updateSlider(input)
-                    end
-                end)
-                
-                return {
-                    Set = function(self, value)
-                        sliderValue = math.clamp(value, min, max)
-                        local pos = UDim2.new((sliderValue - min) / (max - min), 0, 1, 0)
-                        sliderFill.Size = pos
-                        sliderDot.Position = UDim2.new(pos.X.Scale, -8, 0.5, -8)
-                        sliderText.Text = text .. ": " .. sliderValue
-                        callback(sliderValue)
-                    end,
-                    Get = function(self)
-                        return sliderValue
-                    end
-                }
-            end
-            
-            -- Other elements (Dropdown, Label) would follow similar patterns...
             
             return section
         end
@@ -682,15 +323,8 @@ function ZyroInternal:Window(title, options)
         return tab
     end
     
-    -- Toggle UI visibility
-    function Zyro:Toggle()
-        ScreenGui.Enabled = not ScreenGui.Enabled
-    end
-    
-    -- Make UI visible
     ScreenGui.Parent = game:GetService("CoreGui")
-    
-    return Zyro
+    return Hydra
 end
 
-return ZyroInternal
+return HydraLib
